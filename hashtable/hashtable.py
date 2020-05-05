@@ -8,7 +8,57 @@ class HashTableEntry:
         self.value = value
         self.next = None
 
+class LinkedList:
+    def __init__(self):
+        self.head = None
+    
+    def add_to_head(self, key, value):
+        node = HashTableEntry(key, value)
+        node.next = self.head
+        self.head = node
 
+    def find(self, key):
+        cur = self.head
+        while cur is not None:
+            if cur.key == key:
+                return cur
+            cur = cur.next
+
+        return None
+
+    def append_at_tail(self, key, value):
+        node = HashTableEntry(key, value)
+
+        if head is None:
+            self.head = node
+            retrurn
+        
+        cur = self.head
+        while cur is not None:
+            cur = cur.next
+        
+        cur.next = node
+
+    def delete(self, key):
+        cur = self.head
+
+        if cur.key == key:
+            self.head = self.head.next
+            cur.next = None
+            return cur
+
+        prev = None
+
+        while cur is not None:
+            if cur.key == key:
+                prev.next = cur.next
+                cur.next = None
+                return cur
+            prev = cur
+            cur = cur.next
+
+        return None
+        
 class HashTable:
     """
     A hash table that with `capacity` buckets
@@ -56,8 +106,17 @@ class HashTable:
         Implement this.
         """
         index = self.hash_index(key)
-        self.storage[index] = HashTableEntry(key, value)
-
+        # self.storage[index] = HashTableEntry(key, value)
+        if self.storage[index] is None:
+            self.storage[index] = LinkedList()
+            self.storage[index].add_to_head(key, value)
+        else:
+            n = self.storage[index].find(key)
+            if n is None:
+                self.storage[index].add_to_head(key, value)
+            else:
+                n.value = value
+    
     def delete(self, key):
         """
         Remove the value stored with the given key.
@@ -67,7 +126,7 @@ class HashTable:
         Implement this.
         """
         index = self.hash_index(key)
-        self.storage[index] = None
+        self.storage[index].delete(key)
 
     def get(self, key):
         """
@@ -78,10 +137,10 @@ class HashTable:
         Implement this.
         """
         index = self.hash_index(key)
-        if self.storage[index] == None:
+        if self.storage[index] is None or self.storage[index].find(key) is None:
             return None
         else:
-            return self.storage[index].value
+            return self.storage[index].find(key).value
 
     def resize(self):
         """
@@ -96,7 +155,10 @@ class HashTable:
         for entry in old:
             if entry==None: continue
             else:
-                self.put(entry.key, entry.value)
+                cur = entry.head
+                while cur is not None:
+                    self.put(cur.key, cur.value)
+                    cur = cur.next
 
 
 
