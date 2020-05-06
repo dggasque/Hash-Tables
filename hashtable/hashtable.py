@@ -69,6 +69,7 @@ class HashTable:
     def __init__(self, capacity):
         self.capacity = capacity
         self.storage = [None] * self.capacity
+        self.size = 0
         
     def fnv1(self, key):
         """
@@ -116,7 +117,8 @@ class HashTable:
                 self.storage[index].add_to_head(key, value)
             else:
                 n.value = value
-    
+        self.size += 1
+
     def delete(self, key):
         """
         Remove the value stored with the given key.
@@ -127,7 +129,8 @@ class HashTable:
         """
         index = self.hash_index(key)
         self.storage[index].delete(key)
-
+        self.size -= 1
+        
     def get(self, key):
         """
         Retrieve the value stored with the given key.
