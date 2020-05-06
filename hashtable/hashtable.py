@@ -31,7 +31,7 @@ class LinkedList:
 
         if head is None:
             self.head = node
-            retrurn
+            return
         
         cur = self.head
         while cur is not None:
@@ -67,7 +67,7 @@ class HashTable:
     Implement this.
     """
     def __init__(self, capacity):
-        self.capacity = capacity
+        self.capacity = max(capacity, 8)
         self.storage = [None] * self.capacity
         self.size = 0
         
@@ -79,8 +79,8 @@ class HashTable:
         """
         h = 14695981039346656037
         for b in str(key).encode():
-            h *= 1099511628211
             h ^= b
+            h *= 1099511628211
         return h
 
     def djb2(self, key):
@@ -96,7 +96,7 @@ class HashTable:
         between within the storage capacity of the hash table.
         """
         return self.fnv1(key) % self.capacity
-        #return self.djb2(key) % self.capacity
+        # return self.djb2(key) % self.capacity
 
     def put(self, key, value):
         """
@@ -118,7 +118,9 @@ class HashTable:
             else:
                 n.value = value
         self.size += 1
-
+        if self.load() > 0.7:
+            self.resize()
+    
     def delete(self, key):
         """
         Remove the value stored with the given key.
@@ -128,9 +130,13 @@ class HashTable:
         Implement this.
         """
         index = self.hash_index(key)
+        n = self.storage[index].find(key)
         self.storage[index].delete(key)
-        self.size -= 1
-        
+        if n is not None:    
+            self.size -= 1
+        if self.load() < 0.2:
+            self.resize(0.5)
+
     def get(self, key):
         """
         Retrieve the value stored with the given key.
@@ -145,7 +151,7 @@ class HashTable:
         else:
             return self.storage[index].find(key).value
 
-    def resize(self):
+    def resize(self, resize_factor=2):
         """
         Doubles the capacity of the hash table and
         rehash all key/value pairs.
@@ -153,7 +159,8 @@ class HashTable:
         Implement this.
         """
         old = self.storage
-        self.capacity *= 2
+        self.capacity = max(self.capacity*resize_factor, 8)
+
         self.storage = [None] * self.capacity
         for entry in old:
             if entry==None: continue
@@ -163,7 +170,8 @@ class HashTable:
                     self.put(cur.key, cur.value)
                     cur = cur.next
 
-
+    def load(self):
+        return self.size/self.capacity
 
 if __name__ == "__main__":
     ht = HashTable(2)
