@@ -1,5 +1,14 @@
+import re
 def word_count(s):
     # Implement me.
+    s = s.lower()
+    s = re.sub('[^a-z\ \']+', " ", s)
+    words = s.split()
+    word_count = {}
+    word_set = set(words)
+    for word in word_set:
+        word_count[word] = words.count(word)
+    return word_count
 
 
 if __name__ == "__main__":

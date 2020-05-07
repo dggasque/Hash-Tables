@@ -1,5 +1,16 @@
 def no_dups(s):
     # Implement me.
+    words = s.split()
+    word_dic = {}
+    for word in words:
+        word_dic[word] = 1
+    
+    string = ""
+
+    for key in word_dic:
+        string = string + " " + key
+    
+    return string.strip()
 
 
 if __name__ == "__main__":
